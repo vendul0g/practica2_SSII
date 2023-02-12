@@ -9,12 +9,6 @@ else
   then
     echo "demasiados argumentos"
     exit
-  
-  else
-    if test $1="-h" 
-    then
-      echo "commit.sh: Meteme el mensaje para el commit entre comillas dobles \"\" "
-    fi
   fi
 fi
 
