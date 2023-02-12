@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 if test $# -eq 0
 then
   echo "commit.sh: Meteme el mensaje para el comit entre comillas dobles \"\" "
