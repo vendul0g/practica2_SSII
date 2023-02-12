@@ -15,13 +15,15 @@ fi
 git add -A
 git commit -m "$1"
 
-expect - << EOF
+expect - <<_END_EXPECT
   spawn git push -u origin main
   expect 'User*'
   send "vendul0g\r"
   expect 'Pass*'
-  send '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'
-EOF
+  send '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\r'
+  set timeout -1 ; #no timeout
+  expect eof
+_END_EXPECT
 
 #usuario github:	vendul0g
 #token github: 		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
