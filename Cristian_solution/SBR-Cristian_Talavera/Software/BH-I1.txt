@@ -1,0 +1,6 @@
+5
+Mes = Septiembre
+Nivel = Alto
+Precipitaciones = Fuertes
+Prediccion = Tormenta
+Profundidad = 8

@@ -1,0 +1,22 @@
+ --- IDENTIFICACION DE FRUTAS --- 
+ ---- Base de Hechos Inicial ---- 
+ Diametro = 9
+ Forma = Redonda
+ NSemillas = 0
+ Color = Verde
+
+ -------------------------------- 
+ Objetivo: Fruta
+ -------------------------------- 
+
+ Aplicando R5:	 Si Forma = Redonda y Diametro < 10 Entonces ClaseFrutal = Arbol
+
+ ----- Base de Hechos Final ----- 
+ Diametro = 9
+ Forma = Redonda
+ NSemillas = 0
+ Color = Verde
+ ClaseFrutal = Arbol
+ -------------------------------- 
+
+ ---- No Exito ---- 

@@ -1,0 +1,26 @@
+ --- IDENTIFICACION DE FRUTAS --- 
+ ---- Base de Hechos Inicial ---- 
+ Diametro = 3
+ Forma = Redonda
+ NSemillas = 1
+ Color = Rojo
+
+ -------------------------------- 
+ Objetivo: Fruta
+ -------------------------------- 
+
+ Aplicando R5:	 Si Forma = Redonda y Diametro < 10 Entonces ClaseFrutal = Arbol
+ Aplicando R6:	 Si NSemillas = 1 Entonces TipoSemilla = Hueso
+ Aplicando R13:	 Si ClaseFrutal = Arbol y Color = Rojo y TipoSemilla = Hueso Entonces Fruta = Cereza
+
+ ----- Base de Hechos Final ----- 
+ Diametro = 3
+ Forma = Redonda
+ NSemillas = 1
+ Color = Rojo
+ ClaseFrutal = Arbol
+ TipoSemilla = Hueso
+ Fruta = Cereza
+ -------------------------------- 
+
+ ---- Exito: Fruta = Cereza ---- 

@@ -1,0 +1,22 @@
+ --- DETECCION DE INUNDACIONES --- 
+ ---- Base de Hechos Inicial ---- 
+ Mes = Enero
+ Cambio = Subiendo
+ Prediccion = Soleado
+
+ -------------------------------- 
+ Objetivo: Inundacion
+ -------------------------------- 
+
+ Aplicando R8:	 Si Mes = Enero Entonces Estacion = Humeda
+ Aplicando R20:	 Si Prediccion = Soleado Entonces Lluvia = Ninguna
+
+ ----- Base de Hechos Final ----- 
+ Mes = Enero
+ Cambio = Subiendo
+ Prediccion = Soleado
+ Estacion = Humeda
+ Lluvia = Ninguna
+ -------------------------------- 
+
+ ---- No Exito ---- 

@@ -1,0 +1,31 @@
+ --- DETECCION DE INUNDACIONES --- 
+ ---- Base de Hechos Inicial ---- 
+ Mes = Septiembre
+ Nivel = Alto
+ Precipitaciones = Fuertes
+ Prediccion = Tormenta
+ Profundidad = 8
+
+ -------------------------------- 
+ Objetivo: Inundacion
+ -------------------------------- 
+
+ Aplicando R4:	 Si Mes = Septiembre Entonces Estacion = Humeda
+ Aplicando R16:	 Si Precipitaciones = Fuertes Entonces Cambio = Subiendo
+ Aplicando R19:	 Si Profundidad > 5 Entonces Nivel = Alto
+ Aplicando R22:	 Si Prediccion = Tormenta Entonces Lluvia = Fuerte
+ Aplicando R32:	 Si Cambio = Subiendo y Nivel = Alto y Lluvia = Fuerte Entonces Inundacion = Si
+
+ ----- Base de Hechos Final ----- 
+ Mes = Septiembre
+ Nivel = Alto
+ Precipitaciones = Fuertes
+ Prediccion = Tormenta
+ Profundidad = 8
+ Estacion = Humeda
+ Cambio = Subiendo
+ Lluvia = Fuerte
+ Inundacion = Si
+ -------------------------------- 
+
+ ---- Exito: Inundacion = Si ---- 

@@ -1,0 +1,24 @@
+ --- DETECCION DE INUNDACIONES --- 
+ ---- Base de Hechos Inicial ---- 
+ Mes = Septiembre
+ Precipitaciones = Ninguna
+ Nivel = Normal
+
+ -------------------------------- 
+ Objetivo: Inundacion
+ -------------------------------- 
+
+ Aplicando R4:	 Si Mes = Septiembre Entonces Estacion = Humeda
+ Aplicando R14:	 Si Precipitaciones = Ninguna y Estacion = Humeda Entonces Cambio = Ninguno
+ Aplicando R24:	 Si Cambio = Ninguno y Nivel = Normal Entonces Inundacion = No
+
+ ----- Base de Hechos Final ----- 
+ Mes = Septiembre
+ Precipitaciones = Ninguna
+ Nivel = Normal
+ Estacion = Humeda
+ Cambio = Ninguno
+ Inundacion = No
+ -------------------------------- 
+
+ ---- Exito: Inundacion = No ---- 

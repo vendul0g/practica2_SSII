@@ -1,4 +1,5 @@
-a.out: practica2.h
-	g++ -Wall practica2.cpp
-clean:
-	rm -rf practica2
+practica2: practica2.o
+	g++ -o practica2 practica2.o
+
+practica2.o: practica2.cpp practica2.h
+	g++ -c -Wall practica2.cpp

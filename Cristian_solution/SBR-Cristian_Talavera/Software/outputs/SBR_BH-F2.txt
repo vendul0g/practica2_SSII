@@ -1,0 +1,26 @@
+ --- IDENTIFICACION DE FRUTAS --- 
+ ---- Base de Hechos Inicial ---- 
+ Diametro = 8
+ Forma = Redonda
+ NSemillas = 10
+ Color = Verde
+
+ -------------------------------- 
+ Objetivo: Fruta
+ -------------------------------- 
+
+ Aplicando R5:	 Si Forma = Redonda y Diametro < 10 Entonces ClaseFrutal = Arbol
+ Aplicando R7:	 Si NSemillas > 1 Entonces TipoSemilla = Multiple
+ Aplicando R16:	 Si ClaseFrutal = Arbol y Color = Verde y TipoSemilla = Multiple Entonces Fruta = Manzana
+
+ ----- Base de Hechos Final ----- 
+ Diametro = 8
+ Forma = Redonda
+ NSemillas = 10
+ Color = Verde
+ ClaseFrutal = Arbol
+ TipoSemilla = Multiple
+ Fruta = Manzana
+ -------------------------------- 
+
+ ---- Exito: Fruta = Manzana ---- 

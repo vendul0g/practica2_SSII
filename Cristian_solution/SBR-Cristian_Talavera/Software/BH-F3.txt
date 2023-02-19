@@ -1,0 +1,5 @@
+4
+Diametro = 9
+Forma = Redonda
+NSemillas = 0
+Color = Verde

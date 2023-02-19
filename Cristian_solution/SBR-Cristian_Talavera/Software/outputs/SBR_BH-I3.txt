@@ -1,0 +1,24 @@
+ --- DETECCION DE INUNDACIONES --- 
+ ---- Base de Hechos Inicial ---- 
+ Mes = Agosto
+ Profundidad = 8
+ Prediccion = 9
+ Cambio = Bajando
+
+ -------------------------------- 
+ Objetivo: Inundacion
+ -------------------------------- 
+
+ Aplicando R3:	 Si Mes = Agosto Entonces Estacion = Seca
+ Aplicando R19:	 Si Profundidad > 5 Entonces Nivel = Alto
+
+ ----- Base de Hechos Final ----- 
+ Mes = Agosto
+ Profundidad = 8
+ Prediccion = 9
+ Cambio = Bajando
+ Estacion = Seca
+ Nivel = Alto
+ -------------------------------- 
+
+ ---- No Exito ---- 

@@ -1,0 +1,20 @@
+ --- IDENTIFICACION DE FRUTAS --- 
+ ---- Base de Hechos Inicial ---- 
+ Forma = Redonda
+ Diametro = 3
+ Color = Morado
+
+ -------------------------------- 
+ Objetivo: Fruta
+ -------------------------------- 
+
+ Aplicando R5:	 Si Forma = Redonda y Diametro < 10 Entonces ClaseFrutal = Arbol
+
+ ----- Base de Hechos Final ----- 
+ Forma = Redonda
+ Diametro = 3
+ Color = Morado
+ ClaseFrutal = Arbol
+ -------------------------------- 
+
+ ---- No Exito ---- 

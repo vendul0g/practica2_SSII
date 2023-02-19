@@ -1,0 +1,4 @@
+3
+Mes = Enero
+Cambio = Subiendo
+Prediccion = Soleado

@@ -1,0 +1,4 @@
+3
+Forma = Redonda
+Diametro = 3
+Color = Morado
