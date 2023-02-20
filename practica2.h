@@ -28,4 +28,11 @@ struct _regla
 };
 typedef struct _regla regla;
 
+struct _solucion
+{
+    bool verificado;
+    vector<regla> reglas;
+};
+typedef struct _solucion solucion;
+
 #endif // !Practica2_H

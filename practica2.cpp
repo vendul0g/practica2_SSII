@@ -12,7 +12,7 @@ string print_lista_reglas(vector<regla> list)
     string s = "{";
     for(size_t i = 0; i < list.size(); i++)
     {
-        s += "R" + list[i].id;
+        s += "R" + to_string(list[i].id);
         if(i < list.size() - 1)
             s += ", ";
     }
@@ -109,7 +109,7 @@ vector<hecho> inicializa_bh()
 hecho recuperar_meta()
 {
     hecho meta;
-    meta.id = 'h';
+    meta.id = 'q';
     return meta;
 }
 
@@ -149,37 +149,47 @@ vector<hecho> extraer_antecedentes(regla r)
  * @param meta Meta a verificar
  * @param bh Base de Hechos
  * @param bc Base de conocimiento
- * @return true si la meta está en la base de hechos
+ * @return true si la meta está en la base de hechos y las reglas para llegar a ella
 */
-bool verificar (hecho meta, vector<hecho> bh)
+solucion verificar (hecho meta, vector<hecho> bh)
 {
-    bool verificado = false;
+    solucion sol;
+    sol.verificado = false;
     
     // Comprobamos si la meta está en la base de hechos
     if(contenida(meta, bh))
-        return true;
-    
-    //TODO comentario
-    vector<regla> cc = equiparar(bc, meta);
-    cout << "ccsize="<<cc.size()<<endl;//TODO borrar
-    while(cc.size() > 0 && !verificado)
     {
-        cout << "CC=" << print_lista_reglas(cc) <<endl;
+        sol.verificado = true;
+        return sol;
+    }
+    
+    cout << endl;
+    
+    vector<regla> cc = equiparar(bc, meta);
+
+    while(cc.size() > 0 && !sol.verificado)
+    {
+        sol.reglas.resize(1);//Habrá al menos una regla en la solución
+
+        cout << "CC=" << print_lista_reglas(cc) << endl;
 
         //R = Resolver(CC)
         regla r = cc[0];
         cout << "R={R" << r.id << "}" << endl;
 
+        //Añadimos R a la solución
+        sol.reglas.insert(sol.reglas.begin(), r);
+
         //Eliminar(R,CC)
         cc.erase(cc.begin());
-        cout << "Eliminar R" << r.id << " --> CC=" << print_lista_reglas(cc) << endl;
+        cout<<"Eliminar R"<<r.id<<" --> CC=" << print_lista_reglas(cc) << endl;
 
         vector<hecho> nuevas_metas = extraer_antecedentes(r);
         cout << "NuevasMetas=" << print_lista_hechos(nuevas_metas) << endl;
 
-        verificado = true;
+        sol.verificado = true;
 
-        while(nuevas_metas.size() > 0 && verificado)
+        while(nuevas_metas.size() > 0 && sol.verificado)
         {
             //Nmet = SeleccionarMeta(NuevasMetas);
             hecho n_met = nuevas_metas[0];
@@ -189,35 +199,56 @@ bool verificar (hecho meta, vector<hecho> bh)
             nuevas_metas.erase(nuevas_metas.begin());
             cout << "NuevasMetas=" << print_lista_hechos(nuevas_metas) << endl;
 
-            verificado = verificar(n_met, bh);
-            cout << "Verificar(" << n_met.id << ", "<< print_lista_hechos(bh) << ") --> " << verificado << endl;
+            cout << "Verificar(" << n_met.id << ", "<< print_lista_hechos(bh) << ")";
+            solucion aux = verificar(n_met, bh);
+            sol.verificado = aux.verificado;
+
+            //Añadimos las reglas de la solución auxiliar
+            for(size_t i = 0; i < aux.reglas.size(); i++)
+            {
+                sol.reglas[i + sol.reglas.size() - aux.reglas.size()] = aux.reglas[i];
+            }
+            
+            cout << " --> " << sol.verificado << endl;
+
+            cout << "BH=" << print_lista_hechos(bh) << endl;
         }
 
-        if(verificado)
+        if(sol.verificado)
         {
             //Añadir(Meta, BH)
             bh.push_back(meta);
         }
     }
-    return verificado;
+    if(cc.size() > 0 && sol.verificado)
+    {
+        cout<<"verificado = "<<sol.verificado<<"; CC="<<print_lista_reglas(cc)
+            << "; BH=" << print_lista_hechos(bh) << endl;
+    }
+    return sol;
 }
 
-bool encadenamiento_hacia_atrás()
+void encadenamiento_hacia_atrás()
 {
     // Recuperamos la meta del fichero de hechos
     hecho meta = recuperar_meta();
 
     // Inicializamos la base de hechos
     vector<hecho> bh = inicializa_bh(); //bh = HechosIniciales
-    if(verificar(meta, bh))
-        return true;
-    return  false;
+    solucion sol = verificar(meta, bh);
+    if(sol.verificado)
+    {
+        cout << "Solución= "<<print_lista_reglas(sol.reglas) << endl;
+    }
+    else
+    {
+        cout << "No se ha encontrado solución" << endl;
+    }
 }
 
 int main(){
     //Base de conocimiento = Global
     bc = inicializa_bc();
-    bool aux = encadenamiento_hacia_atrás();
-    cout << "objetivo cumplido? ->" << aux << endl;
+    encadenamiento_hacia_atrás();
     return 0;
 }
