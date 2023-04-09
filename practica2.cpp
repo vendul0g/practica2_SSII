@@ -37,7 +37,6 @@ string print_lista_hechos(vector<hecho> list)
 vector<regla> inicializa_bc()
 {//TODO borrar
     vector<regla> bc(3);
-
     bc[0].id = 1;
 	bc[0].alpha.resize(1);
 	bc[0].op = OR;
