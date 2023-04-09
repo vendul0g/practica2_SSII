@@ -2,30 +2,29 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <fstream>
+#include <cstring>
 
 using namespace std;
 
 //Variables globales
-vector<regla> bc;
+vector<regla> bc; //base de conocimientos
 
-string print_lista_reglas(vector<regla> list)
+void print_help()
 {
-    string s = "{";
-    for(size_t i = 0; i < list.size(); i++)
-    {
-        s += "R" + to_string(list[i].id);
-        if(i < list.size() - 1)
-            s += ", ";
-    }
-    s+= "}";
-    return s;
+    cout << "+----------------------+" << endl;
+    cout << "|  Practica 2 - SBR    |" << endl;
+    cout << "+----------------------+" << endl;
+    cout << "Uso: practica2 <base_conocimiento> <base_hechos> [fichero_salida]" << endl;
+    cout << "Ejemplo: practica2 bc.txt bh.txt" << endl;
 }
 
-string print_lista_hechos(vector<hecho> list)
+string lista_hechos_string(vector<hecho> list)
 {
     string s = "{";
     for(size_t i = 0; i < list.size(); i++)
     {
+        // s += "[" + list[i].id + ", " + to_string(list[i].fc) + "]";
         s += list[i].id;
         if(i < list.size() - 1)
             s += ", ";
@@ -34,79 +33,109 @@ string print_lista_hechos(vector<hecho> list)
     return s;
 }
 
-vector<regla> inicializa_bc()
-{//TODO borrar
-    vector<regla> bc(3);
-    bc[0].id = 1;
-	bc[0].alpha.resize(1);
-	bc[0].op = OR;
-	bc[0].alpha[0].id = 'a';
-	bc[0].beta.id = 'g';
-	bc[0].fc = 0.5;
-
-    bc[1].id = 2;
-    bc[1].alpha.resize(2);
-    bc[1].op = AND;
-    bc[1].alpha[0].id = 'b';
-    bc[1].alpha[1].id = 'c';
-    bc[1].beta.id = 'g';
-    bc[1].fc = 0.9;
-
-    bc[2].id = 3;
-    bc[2].alpha.resize(1);
-    bc[2].op = OR;
-    bc[2].alpha[0].id = 'g';
-    bc[2].beta.id = 'r';
-    bc[2].fc = 0.99;
-
-    // bc[3].id = 4;
-    // bc[3].alpha.resize(2);
-    // bc[3].op = AND;
-    // bc[3].alpha[0].id = 'n';
-    // bc[3].alpha[1].id = 'g';
-    // bc[3].beta.id = 'm';
-    // bc[3].fc = 0.6;
-
-    // bc[4].id = 5;
-    // bc[4].alpha.resize(2);
-    // bc[4].op = AND;
-    // bc[4].alpha[0].id = 'h';
-    // bc[4].alpha[1].id = 'm';
-    // bc[4].beta.id = 'q';
-    // bc[4].fc = 0.9;
-
-    return bc;
+string regla_string(regla bc){
+    string s;
+    s += "id="+to_string(bc.id);
+    s += "; op=";
+    bc.op == AND ? s+="AND" : s+="OR";
+    s+="; alpha=";
+    s += lista_hechos_string(bc.alpha);
+    s += "; beta=" + bc.beta.id + "; fc=" + to_string(bc.fc) +"\n";
+    return s;
 }
 
-vector<hecho> inicializa_bh()
-{//TODO borrar
-    vector<hecho> bh(3);
-    
-	bh[0].id = 'a';
-	bh[0].fc = 1;
-
-	bh[1].id = 'b';
-	bh[1].fc = 1;
-
-	bh[2].id = 'c';
-	bh[2].fc = 0.5;
-
-	// bh[3].id = 'f';
-	// bh[3].fc = 0.7;
-
-	// bh[4].id = 'g';
-	// bh[4].fc = 0.8;
-
-	// bh[5].id = 'h';
-	// bh[5].fc = -0.3;
-
-    return bh;
+string lista_reglas_string(vector<regla> list)
+{
+    string s = "{";
+    for(size_t i = 0; i < list.size(); i++)
+    {
+        s += "R" + to_string(list[i].id);
+        // s += regla_string(list[i]);
+        if(i < list.size() - 1)
+            s += ", ";
+    }
+    s+= "}";
+    return s;
 }
 
-hecho recuperar_meta()
+vector<hecho> create_vector_by_string(string s, operador &op)
+{
+    vector<hecho> alpha;
+    unsigned int inicio = 0, fin;
+    do{
+        hecho h;
+        fin = s.find(" ");
+        if(fin > s.length()){
+            fin = s.length();
+        }
+        h.id = s.substr(inicio, fin - inicio);
+        //Actualizao el operador
+        if(h.id == "y" || h.id == "Y"){
+            op = AND;
+        }else if(h.id == "o" || h.id == "O"){
+            op = OR;
+        }else{
+            alpha.push_back(h);
+        }
+
+        if(fin+1 < s.length()){
+            s = s.substr(fin+1);
+            fin = 0;
+        }
+    }while(fin < s.length());
+    return alpha;
+}
+
+void inicializa_bc(ifstream &bc_file)
+{
+    int bc_size, i = 0, aux;
+    string line, alpha_string;
+
+    getline(bc_file, line);
+    bc_size = stoi(line);
+    bc.resize(bc_size);    
+
+        getline(bc_file, line);
+    do{
+        //id
+        bc[i].id = i+1;
+        aux = line.find("Si ")+3;
+        alpha_string = line.substr(aux, line.find(" Entonces")-aux);
+        //vector alpha y operador
+        bc[i].alpha = create_vector_by_string(alpha_string, bc[i].op);
+        //beta
+        aux = line.find("Entonces ")+9;
+        bc[i].beta.id = line.substr(aux, line.find(",") - aux);
+        //fc
+        aux = line.find("FC=")+3;
+        bc[i].fc = stof(line.substr(aux, line.length()-1));
+        i++;
+        getline(bc_file, line);
+    }while (!bc_file.eof());
+}
+
+hecho inicializa_bh(ifstream &bh_file, vector<hecho> &bh)
 {
     hecho meta;
-    meta.id = 'r';
+    int bh_size, i = 0;
+    string line;
+
+    getline(bh_file, line);
+    bh_size = stoi(line);
+    bh.resize(bh_size);
+
+    getline(bh_file, line);
+    do{
+        bh[i].id = line.substr(0, line.find(","));
+        bh[i].fc = stof(line.substr(line.find("=") + 1, line.length()-1));
+
+        getline(bh_file, line);
+        i++;
+    } while (line != "Objetivo" && !bh_file.eof());
+
+    
+    getline(bh_file, line);
+    meta.id = line.substr(0, line.length());
     return meta;
 }
 
@@ -126,7 +155,7 @@ solucion contenida(hecho meta, vector<hecho> bh)
     return s;
 }
 
-vector<regla> equiparar(vector<regla> bc, hecho meta)
+vector<regla> equiparar(hecho meta)
 {
     vector<regla> cc;
     for(size_t i = 0; i < bc.size(); i++)
@@ -140,12 +169,12 @@ vector<regla> equiparar(vector<regla> bc, hecho meta)
     return cc;
 }
 
-vector<hecho> extraer_antecedentes(regla r)
+vector<hecho> extraer_antecedentes(regla bc)
 {
     vector<hecho> antecedentes;
-    for(size_t i = 0; i < r.alpha.size(); i++)
+    for(size_t i = 0; i < bc.alpha.size(); i++)
     {
-        antecedentes.push_back(r.alpha[i]);
+        antecedentes.push_back(bc.alpha[i]);
     }
     return antecedentes;
 }
@@ -159,7 +188,7 @@ float calcular_combinacion_antecedentes(regla r, float r_fc[])
      * factor de certeza de la consecuencia de todos ellos para luego combinarlo
      * con el factor de certeza de la regla
     */
-    cout << "Calculamos FC de antecedentes de regla " << r.id <<" --> Caso 1. FC("<<r.id<<") = ";
+    cout << "\tCaso 1. Calculamos FC de antecedentes de R" << r.id <<" --> FC(Antecedentes R"<<r.id<<") = ";
     float sol;
     //Caso de AND
     if(r.op == AND)
@@ -176,7 +205,7 @@ float calcular_combinacion_antecedentes(regla r, float r_fc[])
     //Caso de OR
     else
     {
-        cout << "2. FC("<<r.id<<") = ";
+        cout << "2. FC(R"<<r.id<<") = ";
         sol = r_fc[0];
         for(unsigned int i = 0; i<r.alpha.size(); i++)
         {
@@ -196,7 +225,7 @@ float calcular_combinacion_reglas(hecho &meta, float m_fc[])
     * > Si e2 entonces h
     * -- Se usa cuando se tienen dos o más reglas que afectan al mismo hecho
     */
-    cout << "Calculamos FC de antecedentes de "<<meta.id<<" --> Caso 2. FC("<<meta.id<<") = ";
+    cout << "Caso 2. Calculamos FC de antecedentes de "<<meta.id<<" --> FC("<<meta.id<<") = ";
     float sol;
     //Caso de ambos positivos
     if(m_fc[0] > 0 && m_fc[1] > 0)
@@ -225,7 +254,7 @@ float calcular_combinacion_reglas(hecho &meta, float m_fc[])
 
 }
 
-float calcular_combinacion_evidencia(regla r, float ant_fc)
+float calcular_combinacion_evidencia(regla bc, float ant_fc)
 {    /**
      * Caso 3. Encadenamiento de evidencia: se combinan dos reglas de manera
      * que el resultado de una regla es la entrada de la otra
@@ -233,7 +262,7 @@ float calcular_combinacion_evidencia(regla r, float ant_fc)
      * > R2: si s entonces h
      * -- Se usa cuando una regla tiene un antecedente
     */
-    cout << "Calculamos FC de regla "<<r.id<<" y sus antecedentes --> Caso 3. FC("<<r.id<<") = ";    
+    cout << "\tCaso 3. Calculamos FC de R"<<bc.id<<" y sus antecedentes --> FC(R"<<bc.id<<") = ";    
     float sol, aux;
 
     if(ant_fc < 0){
@@ -242,7 +271,7 @@ float calcular_combinacion_evidencia(regla r, float ant_fc)
     else{
         aux = ant_fc;
     }
-    sol = r.fc * aux;
+    sol = bc.fc * aux;
     cout << sol << endl;
     return sol;
 }
@@ -270,15 +299,16 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
     }
 
     cout << endl;
-    
-    vector<regla> cc = equiparar(bc, meta);
+
+    //equiparar(consecuentes(bc), meta) bc (global)
+    vector<regla> cc = equiparar(meta);
     float m_fc[cc.size()];
 
     //Inicializamos el índice del bucle
     i = 0;
     while(cc.size() > 0 /*&& !sol.verificado*/)
     {
-        cout << profundidad << "CC=" << print_lista_reglas(cc) << endl;
+        cout << profundidad << "CC=" << lista_reglas_string(cc) << endl;
 
         //R = Resolver(CC)
         regla r = cc[0];
@@ -289,10 +319,10 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
         //Eliminar(R,CC)
         cc.erase(cc.begin());
-        cout<<profundidad<<"Eliminar R"<<r.id<<" --> CC=" << print_lista_reglas(cc) << endl;
+        cout<<profundidad<<"Eliminar R"<<r.id<<" --> CC=" << lista_reglas_string(cc) << endl;
 
         vector<hecho> nuevas_metas = extraer_antecedentes(r);
-        cout << profundidad << "NuevasMetas=" << print_lista_hechos(nuevas_metas) << endl;
+        cout << profundidad << "NuevasMetas=" << lista_hechos_string(nuevas_metas) << endl;
 
         sol.verificado = true;
         
@@ -306,10 +336,10 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
             //Eliminar(Nmet,NuevasMetas)
             nuevas_metas.erase(nuevas_metas.begin());
-            cout << profundidad << "NuevasMetas=" << print_lista_hechos(nuevas_metas) << endl;
+            cout << profundidad << "NuevasMetas=" << lista_hechos_string(nuevas_metas) << endl;
 
-            cout << profundidad << "Verificar(" << n_met.id << ", "<< print_lista_hechos(bh) << ")";
-            solucion aux = verificar(n_met, bh, ": ");
+            cout << profundidad << "Verificar(" << n_met.id << ", BH="<< lista_hechos_string(bh) << ")";
+            solucion aux = verificar(n_met, bh, profundidad+": ");
             sol.verificado = aux.verificado;
             r_fc[k]=aux.fc;
             
@@ -317,7 +347,7 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
             sol.verificado == true ? cout << "TRUE" : cout << "FALSE";
             cout << endl;
 
-            cout << profundidad << "BH=" << print_lista_hechos(bh) << endl;
+            cout << profundidad << "BH=" << lista_hechos_string(bh) << endl;
 
             //Actualizamos el índice del bucle
             k++;
@@ -325,6 +355,7 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
         //Calcular FC de la regla r
         float ant_fc;
+        cout << profundidad << "R"<<r.id<<" (regla activada)"<<endl;
         if(r.alpha.size() > 1){
             cout << profundidad;
             ant_fc = calcular_combinacion_antecedentes(r, r_fc);
@@ -353,29 +384,38 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
     {
         cout<<profundidad<<"verificado = ";
         sol.verificado == true ? cout << "TRUE" : cout << "FALSE";
-        cout<<"; CC="<<print_lista_reglas(cc)<< "; BH=" << print_lista_hechos(bh) << endl;
+        cout<<"; CC="<<lista_reglas_string(cc)<< "; BH=" << lista_hechos_string(bh) << endl;
         
         sol.fc = meta.fc;
     }
     return sol;
 }
 
-void encadenamiento_hacia_atrás()
+void encadenamiento_hacia_atrás(ifstream &bh_file)
 {
     // Recuperamos la meta del fichero de hechos
-    hecho meta = recuperar_meta();
-
     // Inicializamos la base de hechos
-    vector<hecho> bh = inicializa_bh(); //bh = HechosIniciales
+    //bh = HechosIniciales
+    vector<hecho> bh;
+    hecho meta = inicializa_bh(bh_file, bh); 
+    bh_file.close();
+
+    //Mostramos lo leído
+    // cout << "Meta: " << meta.id << endl;
+    // cout << "Base de Hechos: " << lista_hechos_string(bh) << endl;
+    // cout << "Base de Conocimiento: " << lista_reglas_string(bc) << endl;
+    // exit(EXIT_FAILURE);
+
     solucion sol = verificar(meta, bh, "");
+
     cout << "---------------------------------------------------------" <<endl;
     if(sol.verificado)
     {
         cout << "Solucion\tFC=" << setprecision(2) << sol.fc << endl;
         if(sol.fc > 0.5)
-            cout << "Con esta información. Creemos que "<< meta.id <<" es cierto" << endl;
+            cout << "Con esta información. Creemos que la meta "<< meta.id <<" es cierto" << endl;
         else
-            cout << "Con esta información. Creemos que "<< meta.id <<" es falso" << endl;
+            cout << "Con esta información. Creemos que la meta "<< meta.id <<" es falso" << endl;
     }
     else
     {
@@ -383,9 +423,33 @@ void encadenamiento_hacia_atrás()
     }
 }
 
-int main(){
-    //Base de conocimiento = Global
-    bc = inicializa_bc();
-    encadenamiento_hacia_atrás();
-    return 0;
+int main(int argc, char **argv){
+    if(argc < 3  || argc > 4 || strcmp(argv[1], "-h") == 0)
+    {
+        print_help();
+        exit(EXIT_FAILURE);
+    }
+
+    ifstream bc_file;
+    bc_file.open(argv[1], ios::in);
+    if(!bc_file.is_open())
+    {
+        cerr << "Error al abrir el fichero de base de conocimiento" << endl;
+        exit(EXIT_FAILURE);
+    }
+    //Base de conocimiento = Variable Global
+    inicializa_bc(bc_file);
+    bc_file.close();
+    
+    ifstream bh_file;
+    bh_file.open(argv[2], ios::in);
+    if(!bh_file.is_open())
+    {
+        cerr << "Error al abrir el fichero de base de hechos" << endl;
+        exit(EXIT_FAILURE);
+    }
+    encadenamiento_hacia_atrás(bh_file);
+
+    
+    exit(EXIT_SUCCESS);
 }

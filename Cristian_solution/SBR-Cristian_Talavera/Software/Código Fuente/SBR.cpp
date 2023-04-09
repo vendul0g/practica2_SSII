@@ -1,12 +1,12 @@
 #include "SBR.h"
 
-// Fichero en el que se almacenará la salida del programa
+// Fichero en el que se almacenarï¿½ la salida del programa
 ofstream salida;
 
 int 
 main(int argc, char *argv[])
 {
-	// Comprobamos los parámetros
+	// Comprobamos los parï¿½metros
     if (argc != 4) 
     {
         cerr << "USO: SBR.exe <BC.txt> <config.txt> <BH.txt>" << endl;
@@ -62,13 +62,13 @@ encadenamientoHaciaDelante(vector<Par> hechosIniciales, vector<Regla> &bc, strin
 		conjuntoConflicto = equiparar(bc, bh, numReglas);
     	if (!conjuntoConflicto.empty()) 
         {
-            Regla r = resolver(conjuntoConflicto); 
-    		Par nuevoHecho = aplicar(bc, r, bh);
+            Regla bc = resolver(conjuntoConflicto); 
+    		Par nuevoHecho = aplicar(bc, bc, bh);
     		actualizar(bh, nuevoHecho);
     	}   
     }
     
-    // Imprimimos la base de hechos final y la conclusión obtenida
+    // Imprimimos la base de hechos final y la conclusiï¿½n obtenida
     Par solucion;
     salida << endl << " ----- Base de Hechos Final ----- " << endl;
     for(vector<Par>::iterator it = bh.begin(); it != bh.end(); ++it)
@@ -92,7 +92,7 @@ encadenamientoHaciaDelante(vector<Par> hechosIniciales, vector<Regla> &bc, strin
 //////////////////////// Funciones Motor de Inferencia /////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// Comprueba si está contenido el objetivo en la base de hechos
+// Comprueba si estï¿½ contenido el objetivo en la base de hechos
 bool
 contenido(string objetivo, vector<Par> bh)
 {
@@ -106,7 +106,7 @@ contenido(string objetivo, vector<Par> bh)
 
 // Cada antecedente se compara con todos los hechos de la base de hechos y si
 // es igual, incrementa el contador, cuando dicho contador sea igual al
-// número de antecedentes de la regla, añade dicha regla al conjunto conflicto
+// nï¿½mero de antecedentes de la regla, aï¿½ade dicha regla al conjunto conflicto
 vector<Regla>
 equiparar(vector<Regla> bc, vector<Par> bh, int num_reglas)
 {
@@ -158,7 +158,7 @@ equiparar(vector<Regla> bc, vector<Par> bh, int num_reglas)
 					}
 	            }
 	        }
-	        // Si todos los antecedentes son verdaderos, añado dicha regla al conjunto conflicto
+	        // Si todos los antecedentes son verdaderos, aï¿½ado dicha regla al conjunto conflicto
 	        if (antTrue == numAntecedentes)	
 				conjuntoConflicto.push_back(bc[i]);
     	}
@@ -169,7 +169,7 @@ equiparar(vector<Regla> bc, vector<Par> bh, int num_reglas)
 
 
 // Selecciona una regla del conjunto conflicto, la de mayor prioridad, o en caso de empate
-// retorna la regla con menor índice
+// retorna la regla con menor ï¿½ndice
 Regla
 resolver(vector<Regla> conjuntoConflicto)
 {
@@ -191,8 +191,8 @@ resolver(vector<Regla> conjuntoConflicto)
 	return reglaMax;	
 }
 
-// Marca la regla que se ejecutará y retorna el consecuente que será 
-// añadido a la base de hechos
+// Marca la regla que se ejecutarï¿½ y retorna el consecuente que serï¿½ 
+// aï¿½adido a la base de hechos
 Par
 aplicar(vector<Regla> &bc, Regla regla, vector<Par> bh)
 {
@@ -201,7 +201,7 @@ aplicar(vector<Regla> &bc, Regla regla, vector<Par> bh)
 	return consecuente;
 }
 
-// Añade el nuevo hecho a la base de hechos
+// Aï¿½ade el nuevo hecho a la base de hechos
 void
 actualizar(vector<Par> &bh, Par nuevoHecho)
 {
@@ -269,7 +269,7 @@ leeBaseConocimiento(char *bc)
             listaAntecedentes.push_back(ante);
             antecedentes.erase(0, pos + delimiter.length());
         }
-        // Añade el último antecedente a la lista (1 antecedente)
+        // Aï¿½ade el ï¿½ltimo antecedente a la lista (1 antecedente)
         Par ante;
 		checkOperator(index, offset, ante.op, antecedentes);
              
@@ -298,7 +298,7 @@ leeBaseConocimiento(char *bc)
         consecuente.intValue = atoi(value.c_str());
         ////////////////////////////////////////////////////////////////////////
         
-        // Se establecen los campos de la regla y se añade al conjunto
+        // Se establecen los campos de la regla y se aï¿½ade al conjunto
         Regla regla;
         regla.listaAntecedentes = listaAntecedentes;
         regla.consecuente = consecuente;
@@ -425,8 +425,8 @@ imprimeReglas(vector<Regla> reglas)
     }
 }
 
-// Para un antecedente/consecuente dado, establecemos el operador que tendrá y 
-// su correspondiente desplazamiento, que será usado posteriormente para obtener
+// Para un antecedente/consecuente dado, establecemos el operador que tendrï¿½ y 
+// su correspondiente desplazamiento, que serï¿½ usado posteriormente para obtener
 // su valor y su identificador
 void 
 checkOperator(int &index, int &offset, string &op, string search)
