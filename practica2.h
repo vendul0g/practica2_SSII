@@ -31,7 +31,7 @@ typedef struct _regla regla;
 struct _solucion
 {
     bool verificado;
-    vector<regla> reglas;
+    float fc;
 };
 typedef struct _solucion solucion;
 
