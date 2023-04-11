@@ -1,0 +1,5 @@
+4
+R1: Si T y P Entonces M, FC=0.9
+R2: Si T y B Entonces V, FC=0.6
+R3: Si C Entonces T, FC=1
+R4: Si H Entonces T, FC=-0.4

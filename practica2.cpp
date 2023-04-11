@@ -1,15 +1,24 @@
-#include "practica2.h"
-#include <iostream>
-#include <vector>
-#include <iomanip>
-#include <fstream>
-#include <cstring>
+#include "practica2.h"  // Definición de objetos del algoritmo : regla, hecho, etc.
+#include <iostream>     // Imprimir por pantalla
+#include <vector>       // Vectores de almacenamiento
+#include <iomanip>      // setprecision() : Indicar precisión de números PuntoFlotante
+#include <fstream>      // Ficheros de entrada
+#include <cstring>      // strcmp() : Comparación de cadenas (string)
+#include <unistd.h>     // dup2() : Redirigir la salida estándar
+#include <fcntl.h>      // open() : Abrir el fichero de salida
 
 using namespace std;
 
 //Variables globales
 vector<regla> bc; //base de conocimientos
 
+/******************************************************************************
+ ****************** FUNCIONES PARA IMPRIMIR POR PANTALLA **********************
+ ******************************************************************************/
+
+/**
+ * @brief Imprime la ayuda del comando cuando no se cumplen los requisitos de ejecución o con el parámetro -h
+*/
 void print_help()
 {
     cout << "+----------------------+" << endl;
@@ -19,13 +28,18 @@ void print_help()
     cout << "Ejemplo: practica2 bc.txt bh.txt" << endl;
 }
 
+/**
+ * @brief Convierte un vector de hechos en una cadena para imprimir por pantalla
+ * @param list Vector de hechos que se quieren imprimir
+ * @return La cadena (string) formateada 
+*/
 string lista_hechos_string(vector<hecho> list)
 {
     string s = "{";
     for(size_t i = 0; i < list.size(); i++)
     {
-        // s += "[" + list[i].id + ", " + to_string(list[i].fc) + "]";
         s += list[i].id;
+        // s += "[" + list[i].id + ", " + to_string(list[i].fc) + "]";
         if(i < list.size() - 1)
             s += ", ";
     }
@@ -33,7 +47,13 @@ string lista_hechos_string(vector<hecho> list)
     return s;
 }
 
-string regla_string(regla bc){
+/**
+ * @brief Convierte una regla en una cadena para imprimir por pantalla
+ * @param bc Base de conocimiento, es decir, lista de reglas
+ * @return La cadena (string) formateada
+*/
+string regla_string(regla bc)
+{
     string s;
     s += "id="+to_string(bc.id);
     s += "; op=";
@@ -44,13 +64,20 @@ string regla_string(regla bc){
     return s;
 }
 
-string lista_reglas_string(vector<regla> list)
+/**
+ * @brief Convierte una lista de reglas en una cadena para imprimir por pantalla
+ * @param list Lista de reglas para imprimir
+ * @param mode Modo en el que se quiere imprimir: 0 = sencillo; 1 = detallado
+ * @return Cadena (string) formateada
+*/
+string lista_reglas_string(vector<regla> list, int mode)
 {
     string s = "{";
     for(size_t i = 0; i < list.size(); i++)
     {
-        s += "R" + to_string(list[i].id);
-        // s += regla_string(list[i]);
+        if(mode == 0)
+            s += "R" + to_string(list[i].id);
+        else s += regla_string(list[i]);
         if(i < list.size() - 1)
             s += ", ";
     }
@@ -58,6 +85,17 @@ string lista_reglas_string(vector<regla> list)
     return s;
 }
 
+/******************************************************************************
+ ***************** FUNCIONES PARA INICIALIZAR EL PROGRAMA *********************
+ ******************************************************************************/
+
+/**
+ * @brief Crea un vector de hechos a partir de una cadena de texto
+ * @param s Cadena de texto que contiene los hechos
+ * @param op Operador de la regla
+ * @return Vector de hechos
+ * @note El operador se actualiza en la función
+*/
 vector<hecho> create_vector_by_string(string s, operador &op)
 {
     vector<hecho> alpha;
@@ -86,6 +124,11 @@ vector<hecho> create_vector_by_string(string s, operador &op)
     return alpha;
 }
 
+/**
+ * @brief Inicializa la base de conocimientos a partir de un fichero
+ * @param bc_file Fichero de entrada con la base de conocimientos
+ * @note La base de conocimientos se almacena en la variable global bc
+*/
 void inicializa_bc(ifstream &bc_file)
 {
     int bc_size, i = 0, aux;
@@ -109,15 +152,22 @@ void inicializa_bc(ifstream &bc_file)
         //fc
         aux = line.find("FC=")+3;
         bc[i].fc = stof(line.substr(aux, line.length()-1));
+
         i++;
         getline(bc_file, line);
     }while (!bc_file.eof());
 }
 
+/**
+ * @brief Inicializa la base de hechos a partir de un fichero
+ * @param bh_file Fichero de entrada con la base de hechos
+ * @param bh Vector de hechos donde se almacenan los hechos
+ * @return El hecho meta identificado en el fichero
+*/
 hecho inicializa_bh(ifstream &bh_file, vector<hecho> &bh)
 {
     hecho meta;
-    int bh_size, i = 0;
+    int bh_size, i = 0, fin;
     string line;
 
     getline(bh_file, line);
@@ -128,17 +178,31 @@ hecho inicializa_bh(ifstream &bh_file, vector<hecho> &bh)
     do{
         bh[i].id = line.substr(0, line.find(","));
         bh[i].fc = stof(line.substr(line.find("=") + 1, line.length()-1));
-
         getline(bh_file, line);
         i++;
-    } while (line != "Objetivo" && !bh_file.eof());
+    } while (line.substr(0,7) != "Objetiv" && !bh_file.eof());
 
     
     getline(bh_file, line);
-    meta.id = line.substr(0, line.length());
+    if(line[line.length()-1] == 13){
+        fin = line.length()-1;
+    }else{
+        fin = line.length();
+    }
+    meta.id = line.substr(0, fin);
     return meta;
 }
 
+/******************************************************************************
+ ************************* FUNCIONES DEL ALGORITMO ****************************
+ ******************************************************************************/
+
+/**
+ * @brief Comprueba si un hecho está contenido en la base de hechos
+ * @param meta Hecho a comprobar
+ * @param bh Base de hechos
+ * @return La solución encontrada
+*/
 solucion contenida(hecho meta, vector<hecho> bh)
 {
     solucion s;
@@ -155,6 +219,12 @@ solucion contenida(hecho meta, vector<hecho> bh)
     return s;
 }
 
+/**
+ * @brief Comprueba si un hecho está contenido en la base de conocimiento
+ * @param meta Hecho a comprobar
+ * @return El vector de reglas que contienen el hecho meta como consecuente
+ * @note La base de conocimientos accedida está en la variable global bc
+*/
 vector<regla> equiparar(hecho meta)
 {
     vector<regla> cc;
@@ -169,25 +239,34 @@ vector<regla> equiparar(hecho meta)
     return cc;
 }
 
-vector<hecho> extraer_antecedentes(regla bc)
+/**
+ * @brief Extrae los antecedentes de una regla
+ * @param r Regla de la que extraer los antecedentes
+ * @return Vector de hechos con los antecedentes de la regla
+*/
+vector<hecho> extraer_antecedentes(regla r)
 {
     vector<hecho> antecedentes;
-    for(size_t i = 0; i < bc.alpha.size(); i++)
+    for(size_t i = 0; i < r.alpha.size(); i++)
     {
-        antecedentes.push_back(bc.alpha[i]);
+        antecedentes.push_back(r.alpha[i]);
     }
     return antecedentes;
 }
 
+/**
+ * @brief Caso 1: combinación de antecedentes: es necesario combinar las piezas
+ * de evidencia, e1 y e2, que afectan al factor de certaza de h
+ * > R: Si e1 y/o e2 entonces h
+ * -- Se usa cuando se tienen dos o más antecedentes para calcular el
+ * factor de certeza de la consecuencia de todos ellos para luego combinarlo
+ * con el factor de certeza de la regla
+ * @param r Regla a la que se le calcula el factor de certeza de sus antecedentes
+ * @param r_fc Vector de factores de certeza de los antecedentes de la regla
+ * @return Factor de certeza de los antecedentes de la regla
+*/
 float calcular_combinacion_antecedentes(regla r, float r_fc[])
-{   /**
-     * Caso 1: combinación de antecedentes: es necesario combinar las piezas
-     * de evidencia, e1 y e2, que afectan al factor de certaza de h
-     * > R: Si e1 y/o e2 entonces h
-     * -- Se usa cuando se tienen dos o más antecedentes para calcular el
-     * factor de certeza de la consecuencia de todos ellos para luego combinarlo
-     * con el factor de certeza de la regla
-    */
+{   
     cout << "\tCaso 1. Calculamos FC de antecedentes de R" << r.id <<" --> FC(Antecedentes R"<<r.id<<") = ";
     float sol;
     //Caso de AND
@@ -217,51 +296,61 @@ float calcular_combinacion_antecedentes(regla r, float r_fc[])
     }
 }
 
-float calcular_combinacion_reglas(hecho &meta, float m_fc[])
-{   /**
-    * Caso 2. Adquisición incremental de evidencia: Se combinan dos piezas de
-    * evidencia, e1 y e2, que afectan al factor de una misma hipotesis
-    * > Si e1 entonces h
-    * > Si e2 entonces h
-    * -- Se usa cuando se tienen dos o más reglas que afectan al mismo hecho
-    */
+/**
+ * @brief Caso 2. Adquisición incremental de evidencia: Se combinan dos piezas de
+ * evidencia, e1 y e2, que afectan al factor de una misma hipotesis
+ * > Si e1 entonces h
+ * > Si e2 entonces h
+ * -- Se usa cuando se tienen dos o más reglas que afectan al mismo hecho
+ * @param meta Hecho meta de la que se quiere calcular el FC
+ * @param m_fc Vector de factores de certeza de las reglas anteriores
+ * @param n Número de reglas anteriores
+ * @return Factor de certeza de la meta
+ * @note se actualiza el fc de la meta
+*/
+float calcular_combinacion_reglas(hecho &meta, float m_fc[], int n)
+{   
     cout << "Caso 2. Calculamos FC de antecedentes de "<<meta.id<<" --> FC("<<meta.id<<") = ";
-    float sol;
-    //Caso de ambos positivos
-    if(m_fc[0] > 0 && m_fc[1] > 0)
-    {
-        sol = m_fc[0] + m_fc[1] * (1 - m_fc[0]);
-        cout << sol << endl;
-        meta.fc = sol;
-        return sol;
-    }
-    //Caso de ambos negativos
-    else if(m_fc[0] < 0 && m_fc[1] < 0)
-    {
-        sol = m_fc[0] + m_fc[1] * (1 + m_fc[0]);
-        cout << sol << endl;
-        meta.fc = sol;
-        return sol;
-    }
-    //Caso de uno positivo y otro negativo
-    else
-    {
-        sol = (m_fc[0] + m_fc[1]) / (1 - min(abs(m_fc[0]), abs(m_fc[1])));
-        cout << sol << endl;
-        meta.fc = sol;
-        return sol;
-    }
+    float sol, aux = m_fc[0];
 
+    for(int i = 1; i < n; i++)
+    {
+        //Caso de ambos positivos
+        if(aux >= 0 && m_fc[i] >= 0)
+        {
+            aux =  m_fc[i] + aux * (1 - m_fc[i]);
+        }
+
+        //Caso de ambos negativos
+        else if(aux <= 0 && m_fc[i] <= 0)
+        {
+            aux = m_fc[i] + aux * (1 + m_fc[i]);
+        }
+        
+        //Caso de uno positivo y otro negativo
+        else
+        {
+            aux = (aux + m_fc[i]) / (1 - min(abs(aux), abs(m_fc[i])));
+        }
+    }
+    sol = aux;
+    cout << sol << endl;
+    meta.fc = sol;
+    return sol;    
 }
 
+/**
+ * @brief Caso 3. Encadenamiento de evidencia: se combinan dos reglas de manera
+ * que el resultado de una regla es la entrada de la otra
+ * > R1: si e entonces s
+ * > R2: si s entonces h
+ * -- Se usa cuando una regla tiene un antecedente
+ * @param bc Regla que se quiere calcular el FC
+ * @param ant_fc Factor de certeza de los hechos anteriores
+ * @return Factor de certeza de la regla
+*/
 float calcular_combinacion_evidencia(regla bc, float ant_fc)
-{    /**
-     * Caso 3. Encadenamiento de evidencia: se combinan dos reglas de manera
-     * que el resultado de una regla es la entrada de la otra
-     * > R1: si e entonces s 
-     * > R2: si s entonces h
-     * -- Se usa cuando una regla tiene un antecedente
-    */
+{    
     cout << "\tCaso 3. Calculamos FC de R"<<bc.id<<" y sus antecedentes --> FC(R"<<bc.id<<") = ";    
     float sol, aux;
 
@@ -280,13 +369,15 @@ float calcular_combinacion_evidencia(regla bc, float ant_fc)
  * @brief Verifica si la meta está en la base de hechos
  * @param meta Meta a verificar
  * @param bh Base de Hechos
- * @param bc Base de conocimiento
+ * @param profundidad Profundidad de la recursividad para mostrar por pantalla
  * @return true si la meta está en la base de hechos y las reglas para llegar a ella
+ * @note bc Base de conocimiento global
 */
 solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 {
     solucion sol;
     sol.verificado = false;
+    sol.fc = 0;
     int i, k;
     
     // Comprobamos si la meta está en la base de hechos
@@ -302,13 +393,14 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
     //equiparar(consecuentes(bc), meta) bc (global)
     vector<regla> cc = equiparar(meta);
-    float m_fc[cc.size()];
+    int cc_size = cc.size();
+    float m_fc[cc_size];
 
     //Inicializamos el índice del bucle
     i = 0;
     while(cc.size() > 0 /*&& !sol.verificado*/)
     {
-        cout << profundidad << "CC=" << lista_reglas_string(cc) << endl;
+        cout << profundidad << "CC=" << lista_reglas_string(cc, 0) << endl;
 
         //R = Resolver(CC)
         regla r = cc[0];
@@ -319,7 +411,7 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
         //Eliminar(R,CC)
         cc.erase(cc.begin());
-        cout<<profundidad<<"Eliminar R"<<r.id<<" --> CC=" << lista_reglas_string(cc) << endl;
+        cout<<profundidad<<"Eliminar R"<<r.id<<" --> CC=" << lista_reglas_string(cc, 0) << endl;
 
         vector<hecho> nuevas_metas = extraer_antecedentes(r);
         cout << profundidad << "NuevasMetas=" << lista_hechos_string(nuevas_metas) << endl;
@@ -374,7 +466,7 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
             //Calculamos el FC de la meta
             cout << profundidad;
-            sol.fc = calcular_combinacion_reglas(meta, m_fc);
+            sol.fc = calcular_combinacion_reglas(meta, m_fc, cc_size);
         }
 
         //Actualizamos el índice del bucle
@@ -384,27 +476,25 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
     {
         cout<<profundidad<<"verificado = ";
         sol.verificado == true ? cout << "TRUE" : cout << "FALSE";
-        cout<<"; CC="<<lista_reglas_string(cc)<< "; BH=" << lista_hechos_string(bh) << endl;
+        cout<<"; CC="<<lista_reglas_string(cc, 0)<< "; BH=" << lista_hechos_string(bh) << endl;
         
         sol.fc = meta.fc;
     }
     return sol;
 }
 
+/**
+ * @brief Función principal del encadenamiento hacia atrás
+ * @param bh_file Fichero que contiene la base de hechos
+ * @note bc Base de conocimiento global
+*/
 void encadenamiento_hacia_atrás(ifstream &bh_file)
 {
     // Recuperamos la meta del fichero de hechos
-    // Inicializamos la base de hechos
-    //bh = HechosIniciales
+    // Inicializamos la base de hechos: bh = HechosIniciales
     vector<hecho> bh;
     hecho meta = inicializa_bh(bh_file, bh); 
     bh_file.close();
-
-    //Mostramos lo leído
-    // cout << "Meta: " << meta.id << endl;
-    // cout << "Base de Hechos: " << lista_hechos_string(bh) << endl;
-    // cout << "Base de Conocimiento: " << lista_reglas_string(bc) << endl;
-    // exit(EXIT_FAILURE);
 
     solucion sol = verificar(meta, bh, "");
 
@@ -412,16 +502,16 @@ void encadenamiento_hacia_atrás(ifstream &bh_file)
     if(sol.verificado)
     {
         cout << "Solucion\tFC=" << setprecision(2) << sol.fc << endl;
-        if(sol.fc > 0.5)
-            cout << "Con esta información. Creemos que la meta "<< meta.id <<" es cierto" << endl;
-        else
-            cout << "Con esta información. Creemos que la meta "<< meta.id <<" es falso" << endl;
     }
     else
     {
         cout << "No se ha encontrado solución" << endl;
     }
 }
+
+/*****************************************************************************
+ **************************** FUNCION PRINCIPAL ******************************
+ *****************************************************************************/
 
 int main(int argc, char **argv){
     if(argc < 3  || argc > 4 || strcmp(argv[1], "-h") == 0)
@@ -430,6 +520,7 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
+    //Abrimos el fichero de base de conocimiento
     ifstream bc_file;
     bc_file.open(argv[1], ios::in);
     if(!bc_file.is_open())
@@ -437,10 +528,11 @@ int main(int argc, char **argv){
         cerr << "Error al abrir el fichero de base de conocimiento" << endl;
         exit(EXIT_FAILURE);
     }
-    //Base de conocimiento = Variable Global
+    //Base de conocimiento (BC)= Variable Global
     inicializa_bc(bc_file);
     bc_file.close();
     
+    //Abrimos el fichero de base de hechos
     ifstream bh_file;
     bh_file.open(argv[2], ios::in);
     if(!bh_file.is_open())
@@ -448,6 +540,25 @@ int main(int argc, char **argv){
         cerr << "Error al abrir el fichero de base de hechos" << endl;
         exit(EXIT_FAILURE);
     }
+
+    //Abrimos el fichero de salida
+    if(argc == 4)
+    {
+        int output_file;
+        if( (output_file = open(argv[3], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+        {
+            cerr << "Error al abrir el fichero de salida" << endl;
+            exit(EXIT_FAILURE);
+        }
+        //Redirigimos la salida estándar al fichero de salida
+        dup2(output_file, STDOUT_FILENO);
+        
+        cout << "Fichero base de conocimiento: " << argv[1] << endl;
+        cout << "Fichero base de hechos: " << argv[2] << endl;
+        cout << "----------------------------------------------------------" << endl;
+    }
+
+    //Encadenamiento hacia atrás - Algoritmo
     encadenamiento_hacia_atrás(bh_file);
 
     

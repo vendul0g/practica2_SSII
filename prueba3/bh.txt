@@ -1,0 +1,10 @@
+7
+Joven, FC=0.4
+Ant2-3A, FC=1
+Ant+3A, FC=0
+Cond+3H, FC=1
+Cond2-3H, FC=0
+NoSolo, FC=0
+Alcohol, FC=0.5
+Objetivo
+Causante

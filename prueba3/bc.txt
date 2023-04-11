@@ -1,0 +1,8 @@
+7
+R1: Si Ant2-3A Entonces Experimentado, FC=0.5
+R2: Si Ant+3A Entonces Experimentado, FC=0.9
+R3: Si Cond2-3H Entonces Cansado, FC=0.5
+R4: Si Cond+3H Entonces Cansado, FC=1
+R5: Si Experimentado y NoSolo Entonces Causante, FC=-0.5
+R6: Si Cansado Entonces Causante, FC=0.5
+R7: Si Joven y Alcohol Entonces Causante, FC=0.7
