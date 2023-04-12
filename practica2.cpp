@@ -7,6 +7,8 @@
 #include <unistd.h>     // dup2() : Redirigir la salida estándar
 #include <fcntl.h>      // open() : Abrir el fichero de salida
 
+#define RECURSION ": " // Indicador de la profundidad del algoritmo
+
 using namespace std;
 
 //Variables globales
@@ -16,16 +18,24 @@ vector<regla> bc; //base de conocimientos
  ****************** FUNCIONES PARA IMPRIMIR POR PANTALLA **********************
  ******************************************************************************/
 
+void print_titulo()
+{
+    cout <<endl<< "+-------------------------+" << endl;
+    cout << "|   Practica 2 - SBR-FC   |" << endl;
+    cout << "+-------------------------+" << endl<<endl;
+
+}
+
 /**
  * @brief Imprime la ayuda del comando cuando no se cumplen los requisitos de ejecución o con el parámetro -h
 */
 void print_help()
 {
-    cout << "+----------------------+" << endl;
-    cout << "|  Practica 2 - SBR    |" << endl;
-    cout << "+----------------------+" << endl;
-    cout << "Uso: practica2 <base_conocimiento> <base_hechos> [fichero_salida]" << endl;
-    cout << "Ejemplo: practica2 bc.txt bh.txt" << endl;
+    print_titulo();
+    cout << "Uso: SBR-FC.exe <base_conocimiento> <base_hechos> [fichero_salida]" <<endl;
+    cout << "\t[-h] : Muestra esta ayuda" << endl<<endl;
+    cout << "El fichero de salida es opcional. Si no se especifica, se imprimirá por pantalla." << endl;
+    cout << "Ejemplo: SBR-FC.exe bc.txt bh.txt" << endl;
 }
 
 /**
@@ -375,14 +385,14 @@ float calcular_combinacion_evidencia(regla bc, float ant_fc)
 */
 solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 {
+    int i, k;
     solucion sol;
     sol.verificado = false;
     sol.fc = 0;
-    int i, k;
     
     // Comprobamos si la meta está en la base de hechos
     solucion aux;
-    if( (aux = contenida(meta, bh)).verificado)
+    if( (aux = contenida(meta, bh)).verificado) //Contenida(Meta, BH)
     {
         sol.verificado = true;
         sol.fc = aux.fc;
@@ -391,10 +401,10 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
 
     cout << endl;
 
-    //equiparar(consecuentes(bc), meta) bc (global)
+    //CC = equiparar(consecuentes(bc), meta) (bc (global))
     vector<regla> cc = equiparar(meta);
     int cc_size = cc.size();
-    float m_fc[cc_size];
+    float m_fc[cc_size];//lista_fc_meta = vacio()
 
     //Inicializamos el índice del bucle
     i = 0;
@@ -407,20 +417,19 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
         cout << profundidad << "R={R" << r.id << "}" << endl;
 
         //Creamos el contenedor donde se calcula el fc global de R
-        float r_fc[r.alpha.size()];
+        float r_fc[r.alpha.size()]; //lista_fc_R = vacio()
 
         //Eliminar(R,CC)
         cc.erase(cc.begin());
         cout<<profundidad<<"Eliminar R"<<r.id<<" --> CC=" << lista_reglas_string(cc, 0) << endl;
 
+        //NuevasMetas = extraer_antecedentes(R)
         vector<hecho> nuevas_metas = extraer_antecedentes(r);
         cout << profundidad << "NuevasMetas=" << lista_hechos_string(nuevas_metas) << endl;
 
-        sol.verificado = true;
-        
         //Inicializamos el índice del bucle
         k = 0;
-        while(nuevas_metas.size() > 0 /*&& sol.verificado*/)
+        while(nuevas_metas.size() > 0 /*&& sol.verificado*/) //Mientras NoVacio(NuevasMetas)
         {
             //Nmet = SeleccionarMeta(NuevasMetas);
             hecho n_met = nuevas_metas[0];
@@ -431,9 +440,14 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
             cout << profundidad << "NuevasMetas=" << lista_hechos_string(nuevas_metas) << endl;
 
             cout << profundidad << "Verificar(" << n_met.id << ", BH="<< lista_hechos_string(bh) << ")";
-            solucion aux = verificar(n_met, bh, profundidad+": ");
-            sol.verificado = aux.verificado;
-            r_fc[k]=aux.fc;
+            solucion sol_nmet = verificar(n_met, bh, profundidad+ RECURSION); //(verificado, fc_Nmet) = verificar(Nmet, BH)
+            
+            if(sol_nmet.verificado)
+            {// Si v_nmet == verdadero entonces verificado = v_nmet
+                sol.verificado = sol_nmet.verificado;
+            }
+
+            r_fc[k]=sol_nmet.fc; // Añadir(fc_Nmet, lista_fc_R)
             
             cout << profundidad << " --> ";
             sol.verificado == true ? cout << "TRUE" : cout << "FALSE";
@@ -450,34 +464,38 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
         cout << profundidad << "R"<<r.id<<" (regla activada)"<<endl;
         if(r.alpha.size() > 1){
             cout << profundidad;
+            // fc_antecedentes_R = calcular_combinacion_antecedentes(lista_fc_R) //Caso 1
             ant_fc = calcular_combinacion_antecedentes(r, r_fc);
         }
         else{
+            // fc_antecedentes_R = calcular_combinacion_antecedentes(lista_fc_R) //Caso 1
             ant_fc = r_fc[0];
         }
         cout << profundidad;
-        m_fc[i] = calcular_combinacion_evidencia(r, ant_fc);
-        meta.fc = m_fc[i];
+        // fc_R = calcular_combinacion_evidencia(R, fc_antecedentes_R) //Caso 3
+        m_fc[i] = calcular_combinacion_evidencia(r, ant_fc); //Añadir(fc_R, lista_fc_meta)
+        meta.fc = m_fc[i]; // Meta.fc = fc_R
 
-        if(sol.verificado && cc.size() == 0 && i > 0)//Si i > 0 significa que el CC tuvo más de una regla
+        if(sol.verificado && cc.size() == 0)//Si verificado y vacio(CC)
         {
             //Añadir(Meta, BH)
             bh.push_back(meta);
 
             //Calculamos el FC de la meta
             cout << profundidad;
-            sol.fc = calcular_combinacion_reglas(meta, m_fc, cc_size);
+            // fc = calcular_combinacion_reglas(lista_fc_meta) //Caso 2
+            sol.fc = calcular_combinacion_reglas(meta, m_fc, cc_size); //Meta.fc = fc
         }
 
         //Actualizamos el índice del bucle
         i++;
     }
-    if(sol.verificado)
+    if(sol.verificado) // Si verificado 
     {
         cout<<profundidad<<"verificado = ";
         sol.verificado == true ? cout << "TRUE" : cout << "FALSE";
         cout<<"; CC="<<lista_reglas_string(cc, 0)<< "; BH=" << lista_hechos_string(bh) << endl;
-        
+        //fc = Meta.fc
         sol.fc = meta.fc;
     }
     return sol;
@@ -488,7 +506,7 @@ solucion verificar (hecho meta, vector<hecho> &bh, string profundidad)
  * @param bh_file Fichero que contiene la base de hechos
  * @note bc Base de conocimiento global
 */
-void encadenamiento_hacia_atrás(ifstream &bh_file)
+void encadenamiento_hacia_atras(ifstream &bh_file)
 {
     // Recuperamos la meta del fichero de hechos
     // Inicializamos la base de hechos: bh = HechosIniciales
@@ -496,12 +514,16 @@ void encadenamiento_hacia_atrás(ifstream &bh_file)
     hecho meta = inicializa_bh(bh_file, bh); 
     bh_file.close();
 
-    solucion sol = verificar(meta, bh, "");
+    cout << "Meta: " << meta.id << endl;
+    cout << "----------------------------------------------------------" << endl;
+
+
+    solucion sol = verificar(meta, bh,  RECURSION); //Verificar(Meta, BH)
 
     cout << "---------------------------------------------------------" <<endl;
     if(sol.verificado)
     {
-        cout << "Solucion\tFC=" << setprecision(2) << sol.fc << endl;
+        cout << "Solucion\tFC("<<meta.id<<")=" << setprecision(2) << sol.fc << endl;
     }
     else
     {
@@ -551,15 +573,16 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
         //Redirigimos la salida estándar al fichero de salida
-        dup2(output_file, STDOUT_FILENO);
-        
-        cout << "Fichero base de conocimiento: " << argv[1] << endl;
-        cout << "Fichero base de hechos: " << argv[2] << endl;
-        cout << "----------------------------------------------------------" << endl;
+        dup2(output_file, STDOUT_FILENO);        
     }
 
+    print_titulo();
+    cout << "Fichero base de conocimiento: " << argv[1] << endl;
+    cout << "Fichero base de hechos: " << argv[2] << endl;
+
+
     //Encadenamiento hacia atrás - Algoritmo
-    encadenamiento_hacia_atrás(bh_file);
+    encadenamiento_hacia_atras(bh_file);
 
     
     exit(EXIT_SUCCESS);

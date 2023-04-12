@@ -1,0 +1,64 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba-A/bc.txt
+Fichero base de hechos: prueba-A/bh_B.txt
+Meta: Barebow
+----------------------------------------------------------
+
+: CC={R6}
+: R={R6}
+: Eliminar R6 --> CC={}
+: NuevasMetas={Metal, ForroLargo, CuerdaAncha}
+: Meta=Metal
+: NuevasMetas={ForroLargo, CuerdaAncha}
+: Verificar(Metal, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela})
+: : CC={R1}
+: : R={R1}
+: : Eliminar R1 --> CC={}
+: : NuevasMetas={Visor}
+: : Meta=Visor
+: : NuevasMetas={}
+: : Verificar(Visor, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: : R1 (regla activada)
+: : 	Caso 3. Calculamos FC de R1 y sus antecedentes --> FC(R1) = 0.2
+: : Caso 2. Calculamos FC de antecedentes de Metal --> FC(Metal) = 0.2
+: : verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+:  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+: Meta=ForroLargo
+: NuevasMetas={CuerdaAncha}
+: Verificar(ForroLargo, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}):  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+: Meta=CuerdaAncha
+: NuevasMetas={}
+: Verificar(CuerdaAncha, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal})
+: : CC={R2}
+: : R={R2}
+: : Eliminar R2 --> CC={}
+: : NuevasMetas={TAlto, TManosGrandes}
+: : Meta=TAlto
+: : NuevasMetas={TManosGrandes}
+: : Verificar(TAlto, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+: : Meta=TManosGrandes
+: : NuevasMetas={}
+: : Verificar(TManosGrandes, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+: : R2 (regla activada)
+: : 	Caso 1. Calculamos FC de antecedentes de R2 --> FC(Antecedentes R2) = 2. FC(R2) = 0.8
+: : 	Caso 3. Calculamos FC de R2 y sus antecedentes --> FC(R2) = 0.56
+: : Caso 2. Calculamos FC de antecedentes de CuerdaAncha --> FC(CuerdaAncha) = 0.56
+: : verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal, CuerdaAncha}
+:  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal, CuerdaAncha}
+: R6 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R6 --> FC(Antecedentes R6) = 0.2
+: 	Caso 3. Calculamos FC de R6 y sus antecedentes --> FC(R6) = 0.18
+: Caso 2. Calculamos FC de antecedentes de Barebow --> FC(Barebow) = 0.18
+: verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal, CuerdaAncha, Barebow}
+---------------------------------------------------------
+Solucion	FC(Barebow)=0.18

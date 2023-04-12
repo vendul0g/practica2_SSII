@@ -1,0 +1,53 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba-A/bc.txt
+Fichero base de hechos: prueba-A/bh_O.txt
+Meta: Olimpico
+----------------------------------------------------------
+
+: CC={R4, R5}
+: R={R4}
+: Eliminar R4 --> CC={R5}
+: NuevasMetas={Poleas, Visor}
+: Meta=Poleas
+: NuevasMetas={Visor}
+: Verificar(Poleas, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela})
+:  --> FALSE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: Meta=Visor
+: NuevasMetas={}
+: Verificar(Visor, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}):  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: R4 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R4 --> FC(Antecedentes R4) = 0
+: 	Caso 3. Calculamos FC de R4 y sus antecedentes --> FC(R4) = 0
+: CC={R5}
+: R={R5}
+: Eliminar R5 --> CC={}
+: NuevasMetas={Metal}
+: Meta=Metal
+: NuevasMetas={}
+: Verificar(Metal, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela})
+: : CC={R1}
+: : R={R1}
+: : Eliminar R1 --> CC={}
+: : NuevasMetas={Visor}
+: : Meta=Visor
+: : NuevasMetas={}
+: : Verificar(Visor, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: : R1 (regla activada)
+: : 	Caso 3. Calculamos FC de R1 y sus antecedentes --> FC(R1) = 0.2
+: : Caso 2. Calculamos FC de antecedentes de Metal --> FC(Metal) = 0.2
+: : verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+:  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal}
+: R5 (regla activada)
+: 	Caso 3. Calculamos FC de R5 y sus antecedentes --> FC(R5) = 0.12
+: Caso 2. Calculamos FC de antecedentes de Olimpico --> FC(Olimpico) = 0.12
+: verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, Metal, Olimpico}
+---------------------------------------------------------
+Solucion	FC(Olimpico)=0.12

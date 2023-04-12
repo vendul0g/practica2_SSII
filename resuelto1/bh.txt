@@ -1,6 +1,0 @@
-3
-Ll_W, FC=1
-Ll_G, FC=1
-S, FC=0.5
-Objetivo
-R

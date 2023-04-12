@@ -1,0 +1,9 @@
+8
+R1: Si Visor Entonces Metal, FC=1
+R2: Si TAlto o TManosGrandes Entonces CuerdaAncha, FC=0.7
+R3: Si FundaTela o Dragonera Entonces Madera, FC=0.8
+R4: Si Poleas y Visor Entonces Olimpico, FC=1
+R5: Si Metal Entonces Olimpico, FC=0.6
+R6: Si Metal y ForroLargo y CuerdaAncha Entonces Barebow, FC=0.9
+R7: Si CuerdaAncha y Guante Entonces Tradicional, FC=0.5
+R8: Si Madera Entonces Tradicional, FC=1

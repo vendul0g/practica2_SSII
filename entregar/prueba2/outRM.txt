@@ -1,0 +1,49 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba2/bc.txt
+Fichero base de hechos: prueba2/bhRM.txt
+Meta: ganaRM
+----------------------------------------------------------
+
+: CC={R2, R3, R5}
+: R={R2}
+: Eliminar R2 --> CC={R3, R5}
+: NuevasMetas={arbMod}
+: Meta=arbMod
+: NuevasMetas={}
+: Verificar(arbMod, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R2 (regla activada)
+: 	Caso 3. Calculamos FC de R2 y sus antecedentes --> FC(R2) = 0.75
+: CC={R3, R5}
+: R={R3}
+: Eliminar R3 --> CC={R5}
+: NuevasMetas={publicoMayEST}
+: Meta=publicoMayEST
+: NuevasMetas={}
+: Verificar(publicoMayEST, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R3 (regla activada)
+: 	Caso 3. Calculamos FC de R3 y sus antecedentes --> FC(R3) = -0.26
+: CC={R5}
+: R={R5}
+: Eliminar R5 --> CC={}
+: NuevasMetas={les2pivRM, visitanteRM}
+: Meta=les2pivRM
+: NuevasMetas={visitanteRM}
+: Verificar(les2pivRM, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: Meta=visitanteRM
+: NuevasMetas={}
+: Verificar(visitanteRM, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R5 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R5 --> FC(Antecedentes R5) = 1
+: 	Caso 3. Calculamos FC de R5 y sus antecedentes --> FC(R5) = -0.1
+: Caso 2. Calculamos FC de antecedentes de ganaRM --> FC(ganaRM) = 0.624625
+: verificado = TRUE; CC={}; BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM, ganaRM}
+---------------------------------------------------------
+Solucion	FC(ganaRM)=0.62

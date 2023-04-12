@@ -1,0 +1,102 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba3/bc.txt
+Fichero base de hechos: prueba3/bh.txt
+Meta: Causante
+----------------------------------------------------------
+
+: CC={R5, R6, R7}
+: R={R5}
+: Eliminar R5 --> CC={R6, R7}
+: NuevasMetas={Experimentado, NoSolo}
+: Meta=Experimentado
+: NuevasMetas={NoSolo}
+: Verificar(Experimentado, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol})
+: : CC={R1, R2}
+: : R={R1}
+: : Eliminar R1 --> CC={R2}
+: : NuevasMetas={Ant2-3A}
+: : Meta=Ant2-3A
+: : NuevasMetas={}
+: : Verificar(Ant2-3A, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol}): :  --> TRUE
+: : BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol}
+: : R1 (regla activada)
+: : 	Caso 3. Calculamos FC de R1 y sus antecedentes --> FC(R1) = 0.5
+: : CC={R2}
+: : R={R2}
+: : Eliminar R2 --> CC={}
+: : NuevasMetas={Ant+3A}
+: : Meta=Ant+3A
+: : NuevasMetas={}
+: : Verificar(Ant+3A, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol})
+: :  --> TRUE
+: : BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol}
+: : R2 (regla activada)
+: : 	Caso 3. Calculamos FC de R2 y sus antecedentes --> FC(R2) = 0
+: : Caso 2. Calculamos FC de antecedentes de Experimentado --> FC(Experimentado) = 0.5
+: : verificado = TRUE; CC={}; BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}
+:  --> TRUE
+: BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}
+: Meta=NoSolo
+: NuevasMetas={}
+: Verificar(NoSolo, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}):  --> TRUE
+: BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}
+: R5 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R5 --> FC(Antecedentes R5) = -1
+: 	Caso 3. Calculamos FC de R5 y sus antecedentes --> FC(R5) = -0
+: CC={R6, R7}
+: R={R6}
+: Eliminar R6 --> CC={R7}
+: NuevasMetas={Cansado}
+: Meta=Cansado
+: NuevasMetas={}
+: Verificar(Cansado, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado})
+: : CC={R3, R4}
+: : R={R3}
+: : Eliminar R3 --> CC={R4}
+: : NuevasMetas={Cond2-3H}
+: : Meta=Cond2-3H
+: : NuevasMetas={}
+: : Verificar(Cond2-3H, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado})
+: :  --> FALSE
+: : BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}
+: : R3 (regla activada)
+: : 	Caso 3. Calculamos FC de R3 y sus antecedentes --> FC(R3) = 0
+: : CC={R4}
+: : R={R4}
+: : Eliminar R4 --> CC={}
+: : NuevasMetas={Cond+3H}
+: : Meta=Cond+3H
+: : NuevasMetas={}
+: : Verificar(Cond+3H, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}): :  --> TRUE
+: : BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado}
+: : R4 (regla activada)
+: : 	Caso 3. Calculamos FC de R4 y sus antecedentes --> FC(R4) = 1
+: : Caso 2. Calculamos FC de antecedentes de Cansado --> FC(Cansado) = 1
+: : verificado = TRUE; CC={}; BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}
+:  --> TRUE
+: BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}
+: R6 (regla activada)
+: 	Caso 3. Calculamos FC de R6 y sus antecedentes --> FC(R6) = 0.5
+: CC={R7}
+: R={R7}
+: Eliminar R7 --> CC={}
+: NuevasMetas={Joven, Alcohol}
+: Meta=Joven
+: NuevasMetas={Alcohol}
+: Verificar(Joven, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}):  --> TRUE
+: BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}
+: Meta=Alcohol
+: NuevasMetas={}
+: Verificar(Alcohol, BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}):  --> TRUE
+: BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado}
+: R7 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R7 --> FC(Antecedentes R7) = 0.4
+: 	Caso 3. Calculamos FC de R7 y sus antecedentes --> FC(R7) = 0.28
+: Caso 2. Calculamos FC de antecedentes de Causante --> FC(Causante) = 0.64
+: verificado = TRUE; CC={}; BH={Joven, Ant2-3A, Cond+3H, NoSolo, Alcohol, Experimentado, Cansado, Causante}
+---------------------------------------------------------
+Solucion	FC(Causante)=0.64

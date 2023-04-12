@@ -1,0 +1,79 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba1/bc.txt
+Fichero base de hechos: prueba1/bh.txt
+Meta: I
+----------------------------------------------------------
+
+: CC={R3}
+: R={R3}
+: Eliminar R3 --> CC={}
+: NuevasMetas={C, H}
+: Meta=C
+: NuevasMetas={H}
+: Verificar(C, BH={A, B, D, E, F, G})
+: : CC={R1, R2}
+: : R={R1}
+: : Eliminar R1 --> CC={R2}
+: : NuevasMetas={A, B}
+: : Meta=A
+: : NuevasMetas={B}
+: : Verificar(A, BH={A, B, D, E, F, G}): :  --> TRUE
+: : BH={A, B, D, E, F, G}
+: : Meta=B
+: : NuevasMetas={}
+: : Verificar(B, BH={A, B, D, E, F, G}): :  --> TRUE
+: : BH={A, B, D, E, F, G}
+: : R1 (regla activada)
+: : 	Caso 1. Calculamos FC de antecedentes de R1 --> FC(Antecedentes R1) = 2. FC(R1) = 0.6
+: : 	Caso 3. Calculamos FC de R1 y sus antecedentes --> FC(R1) = 0.42
+: : CC={R2}
+: : R={R2}
+: : Eliminar R2 --> CC={}
+: : NuevasMetas={D, E, F}
+: : Meta=D
+: : NuevasMetas={E, F}
+: : Verificar(D, BH={A, B, D, E, F, G}): :  --> TRUE
+: : BH={A, B, D, E, F, G}
+: : Meta=E
+: : NuevasMetas={F}
+: : Verificar(E, BH={A, B, D, E, F, G}): :  --> TRUE
+: : BH={A, B, D, E, F, G}
+: : Meta=F
+: : NuevasMetas={}
+: : Verificar(F, BH={A, B, D, E, F, G}): :  --> TRUE
+: : BH={A, B, D, E, F, G}
+: : R2 (regla activada)
+: : 	Caso 1. Calculamos FC de antecedentes de R2 --> FC(Antecedentes R2) = 0.7
+: : 	Caso 3. Calculamos FC de R2 y sus antecedentes --> FC(R2) = 0.35
+: : Caso 2. Calculamos FC de antecedentes de C --> FC(C) = 0.623
+: : verificado = TRUE; CC={}; BH={A, B, D, E, F, G, C}
+:  --> TRUE
+: BH={A, B, D, E, F, G, C}
+: Meta=H
+: NuevasMetas={}
+: Verificar(H, BH={A, B, D, E, F, G, C})
+: : CC={R4}
+: : R={R4}
+: : Eliminar R4 --> CC={}
+: : NuevasMetas={G}
+: : Meta=G
+: : NuevasMetas={}
+: : Verificar(G, BH={A, B, D, E, F, G, C}): :  --> TRUE
+: : BH={A, B, D, E, F, G, C}
+: : R4 (regla activada)
+: : 	Caso 3. Calculamos FC de R4 y sus antecedentes --> FC(R4) = 0
+: : Caso 2. Calculamos FC de antecedentes de H --> FC(H) = 0
+: : verificado = TRUE; CC={}; BH={A, B, D, E, F, G, C, H}
+:  --> TRUE
+: BH={A, B, D, E, F, G, C, H}
+: R3 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R3 --> FC(Antecedentes R3) = 2. FC(R3) = 0.623
+: 	Caso 3. Calculamos FC de R3 y sus antecedentes --> FC(R3) = 0.40495
+: Caso 2. Calculamos FC de antecedentes de I --> FC(I) = 0.40495
+: verificado = TRUE; CC={}; BH={A, B, D, E, F, G, C, H, I}
+---------------------------------------------------------
+Solucion	FC(I)=0.4

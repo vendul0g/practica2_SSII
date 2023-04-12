@@ -1,0 +1,44 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba2/bc.txt
+Fichero base de hechos: prueba2/bhEST.txt
+Meta: ganaEST
+----------------------------------------------------------
+
+: CC={R1, R4, R6}
+: R={R1}
+: Eliminar R1 --> CC={R4, R6}
+: NuevasMetas={arbMod}
+: Meta=arbMod
+: NuevasMetas={}
+: Verificar(arbMod, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R1 (regla activada)
+: 	Caso 3. Calculamos FC de R1 y sus antecedentes --> FC(R1) = 0.4
+: CC={R4, R6}
+: R={R4}
+: Eliminar R4 --> CC={R6}
+: NuevasMetas={publicoEqui}
+: Meta=publicoEqui
+: NuevasMetas={}
+: Verificar(publicoEqui, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R4 (regla activada)
+: 	Caso 3. Calculamos FC de R4 y sus antecedentes --> FC(R4) = -0.1925
+: CC={R6}
+: R={R6}
+: Eliminar R6 --> CC={}
+: NuevasMetas={les2pivEST}
+: Meta=les2pivEST
+: NuevasMetas={}
+: Verificar(les2pivEST, BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}):  --> TRUE
+: BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM}
+: R6 (regla activada)
+: 	Caso 3. Calculamos FC de R6 y sus antecedentes --> FC(R6) = -0.6
+: Caso 2. Calculamos FC de antecedentes de ganaEST --> FC(ganaEST) = -0.461667
+: verificado = TRUE; CC={}; BH={localEST, visitanteRM, arbMod, publicoMayEST, publicoEqui, les2pivEST, les2pivRM, ganaEST}
+---------------------------------------------------------
+Solucion	FC(ganaEST)=-0.46

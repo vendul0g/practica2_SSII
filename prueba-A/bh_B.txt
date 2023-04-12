@@ -1,0 +1,9 @@
+6
+Visor, FC=0.2
+ForroLargo, FC=0.7
+TAlto, FC=0.5
+TManosGrandes, FC=0.8
+Guante, FC=1
+FundaTela, FC=1
+Objetivo
+Barebow

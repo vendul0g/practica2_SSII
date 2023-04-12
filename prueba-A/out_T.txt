@@ -1,0 +1,76 @@
+
++-------------------------+
+|   Practica 2 - SBR-FC   |
++-------------------------+
+
+Fichero base de conocimiento: prueba-A/bc.txt
+Fichero base de hechos: prueba-A/bh_T.txt
+Meta: Tradicional
+----------------------------------------------------------
+
+: CC={R7, R8}
+: R={R7}
+: Eliminar R7 --> CC={R8}
+: NuevasMetas={CuerdaAncha, Guante}
+: Meta=CuerdaAncha
+: NuevasMetas={Guante}
+: Verificar(CuerdaAncha, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela})
+: : CC={R2}
+: : R={R2}
+: : Eliminar R2 --> CC={}
+: : NuevasMetas={TAlto, TManosGrandes}
+: : Meta=TAlto
+: : NuevasMetas={TManosGrandes}
+: : Verificar(TAlto, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: : Meta=TManosGrandes
+: : NuevasMetas={}
+: : Verificar(TManosGrandes, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela}
+: : R2 (regla activada)
+: : 	Caso 1. Calculamos FC de antecedentes de R2 --> FC(Antecedentes R2) = 2. FC(R2) = 0.8
+: : 	Caso 3. Calculamos FC de R2 y sus antecedentes --> FC(R2) = 0.56
+: : Caso 2. Calculamos FC de antecedentes de CuerdaAncha --> FC(CuerdaAncha) = 0.56
+: : verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}
+:  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}
+: Meta=Guante
+: NuevasMetas={}
+: Verificar(Guante, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}):  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}
+: R7 (regla activada)
+: 	Caso 1. Calculamos FC de antecedentes de R7 --> FC(Antecedentes R7) = 0.56
+: 	Caso 3. Calculamos FC de R7 y sus antecedentes --> FC(R7) = 0.28
+: CC={R8}
+: R={R8}
+: Eliminar R8 --> CC={}
+: NuevasMetas={Madera}
+: Meta=Madera
+: NuevasMetas={}
+: Verificar(Madera, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha})
+: : CC={R3}
+: : R={R3}
+: : Eliminar R3 --> CC={}
+: : NuevasMetas={FundaTela, Dragonera}
+: : Meta=FundaTela
+: : NuevasMetas={Dragonera}
+: : Verificar(FundaTela, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}): :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}
+: : Meta=Dragonera
+: : NuevasMetas={}
+: : Verificar(Dragonera, BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha})
+: :  --> TRUE
+: : BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha}
+: : R3 (regla activada)
+: : 	Caso 1. Calculamos FC de antecedentes de R3 --> FC(Antecedentes R3) = 2. FC(R3) = 1
+: : 	Caso 3. Calculamos FC de R3 y sus antecedentes --> FC(R3) = 0.8
+: : Caso 2. Calculamos FC de antecedentes de Madera --> FC(Madera) = 0.8
+: : verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha, Madera}
+:  --> TRUE
+: BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha, Madera}
+: R8 (regla activada)
+: 	Caso 3. Calculamos FC de R8 y sus antecedentes --> FC(R8) = 0.8
+: Caso 2. Calculamos FC de antecedentes de Tradicional --> FC(Tradicional) = 0.856
+: verificado = TRUE; CC={}; BH={Visor, ForroLargo, TAlto, TManosGrandes, Guante, FundaTela, CuerdaAncha, Madera, Tradicional}
+---------------------------------------------------------
+Solucion	FC(Tradicional)=0.86
