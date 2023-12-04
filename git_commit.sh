@@ -16,5 +16,3 @@ fi
 git add -A
 git commit -m "$1"
 git push -u origin main
-#usuario github:	vendul0g
-#token github: 		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
